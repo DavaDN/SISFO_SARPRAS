@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Tambah Barang</title>
+    <title>Tambah Pengguna</title>
     <style>
         body {
             margin: 0;
@@ -38,8 +38,8 @@
         }
 
         input[type="text"],
-        input[type="number"],
-        select {
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 1rem;
@@ -72,16 +72,11 @@
             border-radius: 8px;
             margin-bottom: 1rem;
         }
-        input[type="file"] {
-        margin-bottom: 1rem;
-        font-size: 14px;
-        }
-
     </style>
 </head>
 <body>
     <div class="form-container">
-        <a href="{{ route('barang.index') }}" style="
+        <a href="{{ route('pengguna.index') }}" style="
     display: inline-block;
     margin-bottom: 1rem;
     padding: 10px 16px;
@@ -90,7 +85,7 @@
     text-decoration: none;
     border-radius: 6px;
 ">← Kembali</a>
-        <h2>Tambah Barang</h2>
+        <h2>Tambah Pengguna</h2>
 
         @if ($errors->any())
             <div class="alert">
@@ -102,31 +97,20 @@
             </div>
         @endif
 
-        <form action="{{ route('barang.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('pengguna.store') }}" method="POST">
             @csrf
-        
-            <label for="nama">Nama Barang</label>
-            <input type="text" id="nama" name="nama" value="{{ old('nama') }}" required>
-        
-            <label for="stok">Stok</label>
-            <input type="number" id="stok" name="stok" value="{{ old('stok') }}" required>
-        
-            <label for="kategori_barang_id">Kategori</label>
-            <select id="kategori_barang_id" name="kategori_barang_id" required>
-                <option value="">Pilih Kategori</option>
-                @foreach ($kategori as $item)
-                    <option value="{{ $item->id }}" {{ old('kategori_barang_id') == $item->id ? 'selected' : '' }}>
-                        {{ $item->nama }}
-                    </option>
-                @endforeach
-            </select>
-        
-            <label for="gambar">Gambar</label>
-            <input type="file" id="gambar" name="gambar" accept="png,jpg,jpeg" required>
-        
+
+            <label for="name">Nama Pengguna</label>
+            <input type="text" id="name" name="name" value="{{ old('name') }}" required>
+
+            <label for="email">Email Pengguna</label>
+            <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+
+            <label for="password">Kata Sandi</label>
+            <input type="password" id="password" name="password" required>
+
             <button type="submit">Simpan</button>
         </form>
-        
     </div>
 </body>
 </html>

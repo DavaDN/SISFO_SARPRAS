@@ -189,7 +189,7 @@
                 <a href="{{ route('peminjaman.index') }}">📥 Peminjaman</a>
                 <a href="{{ route('pengembalian.index') }}">✅ Pengembalian</a>
                 <a href="{{ route('laporan.index') }}">📊 Laporan</a>
-                <a href="{{ route('user.index') }}">👥 User</a>
+                <a href="{{ route('pengguna.index') }}">👥 Pengguna</a>
             </div>
         </div>
         <div class="logout">
@@ -213,15 +213,15 @@
         </div>
         <div class="content">
             <h2>Data Barang</h2>
-                <a href="{{ route('barang.create') }}" class="btn">+ Tambah Barang</a>
-                <form method="GET" action="{{ route('kategori-barang.index') }}" style="margin-bottom: 20px;">
-                    <input type="text" name="search" placeholder="Cari nama kategori..." value="{{ request('search') }}"
+                <a href="{{ route('barang.tambah') }}" class="btn">+ Tambah Barang</a>
+                <form method="GET" action="{{ route('barang.index') }}" style="margin-bottom: 20px;">
+                    <input type="text" name="search" placeholder="Cari nama barang ..." value="{{ request('search') }}"
                            style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 250px;">
                     <button type="submit"
                             style="padding: 8px 12px; background-color: #2563eb; color: white; border: none; border-radius: 6px; margin-left: 6px;">
                         Cari
                     </button>
-                    <a href="{{ route('kategori-barang.index') }}"
+                    <a href="{{ route('barang.index') }}"
                        style="padding: 8px 12px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; margin-left: 6px;">
                         Reset
                     </a>
@@ -234,18 +234,26 @@
                         <th>Nama</th>
                         <th>Kategori</th>
                         <th>Stok</th>
+                        <th>Gambar</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($barang as $b)
+                    @forelse($barang as $b)
                     <tr>
                         <td>{{ $b->id }}</td>
                         <td>{{ $b->nama }}</td>
                         <td>{{ $b->kategori->nama }}</td>
                         <td>{{ $b->stok }}</td>
                         <td>
-                            <a href="{{ route('editbarang', $b) }}" class="text-blue">Edit</a>
+                            @if ($b->gambar)
+                                <img src="{{ asset('storage/' . $b->gambar) }}" alt="{{ $b->nama }}" style="width: 60px; height: auto; border-radius: 4px;">
+                            @else
+                                <span style="color: #888;">Tidak ada</span>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="{{ route('barang.edit', $b) }}" class="text-blue">Edit</a>
                             <form action="{{ route('barang.destroy', $b) }}" method="POST" class="form-inline">
                                 @csrf
                                 @method('DELETE')
@@ -253,9 +261,47 @@
                             </form>
                         </td>
                     </tr>
-                    @endforeach
+                @empty
+                <tr><td colspan="3">Tidak ada data ditemukan.</td></tr>
+            @endforelse
                 </tbody>
             </table>
+             <!-- Pagination -->
+@if ($barang->lastPage() > 1)
+<div style="margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap;">
+    {{-- Prev --}}
+    @if ($barang->onFirstPage())
+        <span style="padding: 8px 12px; background-color: #e5e7eb; color: #aaa; border-radius: 5px;">&laquo;</span>
+    @else
+        <a href="{{ $barang->previousPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+           style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
+            &laquo;
+        </a>
+    @endif
+
+    {{-- Page Links --}}
+    @for ($i = 1; $i <= $barang->lastPage(); $i++)
+        @if ($i == $barang->currentPage())
+            <span style="padding: 8px 12px; background-color: #2563eb; color: white; border-radius: 5px;">{{ $i }}</span>
+        @else
+            <a href="{{ $barang->url($i) }}{{ request('search') ? '&search=' . request('search') : '' }}"
+               style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
+                {{ $i }}
+            </a>
+        @endif
+    @endfor
+
+    {{-- Next --}}
+    @if ($barang->hasMorePages())
+        <a href="{{ $barang->nextPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+           style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
+            &raquo;
+        </a>
+    @else
+        <span style="padding: 8px 12px; background-color: #e5e7eb; color: #aaa; border-radius: 5px;">&raquo;</span>
+    @endif
+</div>
+@endif
         </div>
     </div>
 </div>

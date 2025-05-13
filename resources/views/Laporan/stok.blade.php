@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard | SISFO SARPRAS</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>{{ $judul }} | SISFO SARPRAS</title>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <style>
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
@@ -97,75 +96,70 @@
             align-items: center;
             justify-content: center;
         }
-
         .content {
             padding: 30px;
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            font-weight: bold;
+            overflow-y: auto;
         }
 
-        .content h1 { margin-bottom: 30px; }
-
-        .cards {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
+        .content h2 {
+            font-size: 24px;
+            color: #1e3a8a;
+            margin-bottom: 20px;
         }
 
-        .card {
-            flex: 1;
+        table {
+            width: 100%;
+            border-collapse: collapse;
             background-color: white;
-            padding: 20px;
-            border-left: 8px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
-        .card.blue { border-color: #3B82F6; }
-        .card.green { border-color: #22c55e; }
-        .card.red { border-color: #ef4444; }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
 
-        .card .label {
+        th { background-color: #f9fafb; }
+
+        .button-group {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-group a {
+            padding: 10px 16px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
             font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 10px;
         }
 
-        .card .value {
-            font-size: 28px;
-            font-weight: bold;
+        .button-group a.back {
+            background-color: #6b7280;
         }
-
-        .chart-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            flex-grow: 1;
-        }
-
-        canvas { max-width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
-
     <!-- Sidebar -->
     <div class="sidebar">
         <div>
             <div class="title">SISFO SARPRAS</div>
             <div class="nav">
-                <a href="{{ route('dashboard') }}" class="active">🏠 Dashboard</a>
+                <a href="{{ route('dashboard') }}">🏠 Dashboard</a>
                 <a href="{{ route('barang.index') }}">💼 Barang</a>
                 <a href="{{ route('kategori-barang.index') }}">📦 Kategori</a>
                 <a href="{{ route('peminjaman.index') }}">📥 Peminjaman</a>
                 <a href="{{ route('pengembalian.index') }}">✅ Pengembalian</a>
-                <a href="{{ route('laporan.index') }}">📊 Laporan</a>
+                <a href="{{ route('laporan.index') }}" class="active">📊 Laporan</a>
                 <a href="{{ route('pengguna.index') }}">👥 Pengguna</a>
-            </div>            
+            </div>
         </div>
         <div class="logout">
             <form method="POST" action="{{ route('logout') }}">
@@ -183,71 +177,42 @@
                 SISFO SARPRAS
             </div>
             <div class="avatar">
-                <iconify-icon icon="codicon:account" width="30" height="30" style="color: #000; margin-top:9px;"></iconify-icon>
+                <iconify-icon icon="codicon:account" width="28" height="28" style="color: #000;"></iconify-icon>
             </div>
         </div>
 
         <div class="content">
-            <h1>Dashboard</h1>
+            <h2>{{ $judul }}</h2>
 
-            <!-- Cards -->
-            <div class="cards">
-                <div class="card blue">
-                    <div class="label">Total Barang</div>
-                    <div class="value">{{ $totalBarang }}</div>
-                </div>
-                <div class="card green">
-                    <div class="label">Peminjaman Hari Ini</div>
-                    <div class="value">{{ $peminjamanHariIni }}</div>
-                </div>
-                <div class="card red">
-                    <div class="label">Pengembalian Hari Ini</div>
-                    <div class="value">{{ $pengembalianHariIni }}</div>
-                </div>
+            <div class="button-group">
+                <a href="{{ route('laporan.stok.pdf') }}">📄 Download PDF</a>
+                <a href="{{ route('laporan.stok.excel') }}">📊 Download Excel</a>
+                <a href="{{ route('laporan.index') }}" class="back">🔙 Kembali</a>
             </div>
 
-            <!-- Chart -->
-            <div class="chart-container">
-                <h3 style="margin-bottom: 20px;">Peminjaman per Minggu</h3>
-                <canvas id="peminjamanChart" height="100"></canvas>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        @foreach($headers as $header)
+                            <th>{{ $header }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($data as $row)
+                        <tr>
+                            @foreach($row as $cell)
+                                <td>{{ $cell }}</td>
+                            @endforeach
+                        </tr>
+                    @empty
+                        <tr><td colspan="{{ count($headers) }}">Tidak ada data ditemukan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<!-- Chart.js Script -->
-<script>
-    const ctx = document.getElementById('peminjamanChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($labelHari) !!},
-            datasets: [{
-                label: 'Jumlah Peminjaman',
-                data: {!! json_encode($dataHari) !!},
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59,130,246,0.2)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
-    });
-</script>
 
 </body>
 </html>

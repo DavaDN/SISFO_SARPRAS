@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // isi migrasi:
-        Schema::table('peminjaman', function (Blueprint $table) {
-            $table->string('status')->default('pending');
+        Schema::table('pengguna', function (Blueprint $table) {
+            $table->string('email')->unique()->after('name');
         });
     }
 
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('peminjaman', function (Blueprint $table) {
-            //
+        Schema::table('pengguna', function (Blueprint $table) {
+            $table->dropColumn('email');// menghapus kolom gambar
         });
     }
 };

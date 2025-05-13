@@ -9,13 +9,14 @@ class Barang extends Model
 {
     use HasFactory;
 
-    protected $table = 'barang'; // <- beri tahu Laravel nama tabelnya 'barang'
+    protected $table = 'barang';
+    protected $fillable = ['nama', 'stok', 'kategori_barang_id', 'gambar'];
 
-    protected $fillable = ['nama', 'kategori_id'];
     public function kategori()
     {
         return $this->belongsTo(KategoriBarang::class, 'kategori_barang_id');
     }
+
 
     public function peminjaman()
     {

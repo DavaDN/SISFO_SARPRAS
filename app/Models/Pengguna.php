@@ -4,13 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Pengguna extends Model
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory;
+    protected $table = 'pengguna';
 
     /**
      * The attributes that are mass assignable.
@@ -41,4 +41,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function peminjaman()
+    {
+        return $this->hasMany(Peminjaman::class);
+    }
 }

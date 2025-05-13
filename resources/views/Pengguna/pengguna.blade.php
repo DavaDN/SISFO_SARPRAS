@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kategori Barang | SISFO SARPRAS</title>
+    <title>Data Pengguna | SISFO SARPRAS</title>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <style>
-        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
         html, body {
             margin: 0;
@@ -13,11 +16,14 @@
             height: 100%;
             background-color: #f0f2f5;
             color: #333;
-            overflow: hidden;
         }
 
-        .container { display: flex; height: 100vh; }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
 
+        /* SIDEBAR */
         .sidebar {
             width: 250px;
             background-color: #111827;
@@ -49,7 +55,9 @@
             border-radius: 12px 0 0 12px;
         }
 
-        .nav a:hover { background-color: #19376D; }
+        .nav a:hover {
+            background-color: #19376D;
+        }
 
         .logout {
             padding: 24px;
@@ -66,6 +74,7 @@
             font-size: 15px;
         }
 
+        /* MAIN */
         .main {
             flex: 1;
             display: flex;
@@ -96,6 +105,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .content {
             padding: 30px;
             flex-grow: 1;
@@ -108,7 +118,7 @@
             margin-bottom: 20px;
         }
 
-        .add-btn {
+        .btn {
             display: inline-block;
             background-color: #2563eb;
             color: white;
@@ -122,44 +132,45 @@
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         th, td {
-            border: 1px solid #ccc;
-            padding: 12px;
+            padding: 14px 16px;
             text-align: left;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        th { background-color: #f9fafb; }
-
-        .text-blue { color: #2563eb; text-decoration: none; margin-right: 10px; }
-        .text-red { color: #dc2626; background: none; border: none; cursor: pointer; }
-
-        .pagination {
-            display: flex;
-            list-style: none;
-            gap: 8px;
-            margin-top: 20px;
-            padding: 0;
+        thead {
+            background-color: #f3f4f6;
         }
 
-        .pagination li a,
-        .pagination li span {
-            padding: 6px 12px;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        th {
+            color: #374151;
+            font-weight: bold;
+        }
+
+        td {
+            color: #1f2937;
+        }
+
+        .text-blue {
             color: #2563eb;
             text-decoration: none;
         }
 
-        .pagination li.active span {
-            font-weight: bold;
-            background-color: #2563eb;
-            color: white;
-            border-color: #2563eb;
+        .text-red {
+            color: #dc2626;
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .form-inline {
+            display: inline;
         }
     </style>
 </head>
@@ -174,11 +185,11 @@
             <div class="nav">
                 <a href="{{ route('dashboard') }}">🏠 Dashboard</a>
                 <a href="{{ route('barang.index') }}">💼 Barang</a>
-                <a href="{{ route('kategori-barang.index') }}" class="active">📦 Kategori</a>
+                <a href="{{ route('kategori-barang.index') }}">📦 Kategori</a>
                 <a href="{{ route('peminjaman.index') }}">📥 Peminjaman</a>
                 <a href="{{ route('pengembalian.index') }}">✅ Pengembalian</a>
                 <a href="{{ route('laporan.index') }}">📊 Laporan</a>
-                <a href="{{ route('pengguna.index') }}">👥 Pengguna</a>
+                <a href="{{ route('pengguna.index') }}" class="active">👥 Pengguna</a>
             </div>
         </div>
         <div class="logout">
@@ -189,7 +200,7 @@
         </div>
     </div>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <div class="main">
         <div class="topbar">
             <div class="logo-area">
@@ -197,75 +208,76 @@
                 SISFO SARPRAS
             </div>
             <div class="avatar">
-                <iconify-icon icon="codicon:account" width="28" height="28" style="color: #000;"></iconify-icon>
+                <iconify-icon icon="codicon:account" width="30" height="30" style="color: #000; margin-top:9px;"></iconify-icon>
             </div>
         </div>
-
         <div class="content">
-            <h2>Kategori Barang</h2>
-            <a href="{{ route('kategori-barang.create') }}" class="add-btn">+ Tambah Kategori</a>
+            <h2>Data Pengguna</h2>
+                <a href="{{ route('pengguna.create') }}" class="btn">+ Tambah Pengguna</a>
 
-            <!-- Search Form -->
-            <form method="GET" action="{{ route('kategori-barang.index') }}" style="margin-bottom: 20px;">
-                <input type="text" name="search" placeholder="Cari nama kategori..." value="{{ request('search') }}"
-                       style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 250px;">
-                <button type="submit"
-                        style="padding: 8px 12px; background-color: #2563eb; color: white; border: none; border-radius: 6px; margin-left: 6px;">
-                    Cari
-                </button>
-                <a href="{{ route('kategori-barang.index') }}"
-                   style="padding: 8px 12px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; margin-left: 6px;">
-                    Reset
-                </a>
-            </form>
+                <form method="GET" action="{{ route('pengguna.index') }}" style="margin-bottom: 20px;">
+                    <input type="text" name="search" placeholder="Cari nama pengguna ..."
+                           style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 250px;">
+                    <button type="submit"
+                            style="padding: 8px 12px; background-color: #2563eb; color: white; border: none; border-radius: 6px; margin-left: 6px;">
+                        Cari
+                    </button>
+                    <a href="{{ route('pengguna.index') }}"
+                       style="padding: 8px 12px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; margin-left: 6px;">
+                        Reset
+                    </a>
+                </form>
 
-            <!-- Table -->
             <table>
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nama</th>
-                    <th>Aksi</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>Aksi</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @forelse($kategori_barang as $kategori)
+                    @forelse($pengguna as $p)
                     <tr>
-                        <td>{{ $kategori->id }}</td>
-                        <td>{{ $kategori->nama }}</td>
+                        <td>{{ $p->id }}</td>
+                        <td>{{ $p->name }}</td>
+                        <td>{{ $p->email }}</td>
+                        <td>{{ $p->password }}</td>
                         <td>
-                            <a href="{{ route('kategori-barang.edit', $kategori) }}" class="text-blue">Edit</a>
-                            <form action="{{ route('kategori-barang.destroy', $kategori) }}" method="POST" style="display: inline;">
-                                @csrf @method('DELETE')
-                                <button class="text-red" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                            <a href="{{ route('pengguna.edit', $p) }}" class="text-blue">Edit</a>
+                            <form action="{{ route('pengguna.destroy', $p) }}" method="POST" class="form-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button onclick="return confirm('Yakin?')" class="text-red">Hapus</button>
                             </form>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3">Tidak ada data ditemukan.</td></tr>
-                @endforelse
+                <tr><td colspan="4">Tidak ada data ditemukan.</td></tr>
+            @endforelse
                 </tbody>
             </table>
-
-            <!-- Pagination -->
-@if ($kategori_barang->lastPage() > 1)
+             <!-- Pagination -->
+@if ($pengguna->lastPage() > 1)
 <div style="margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap;">
     {{-- Prev --}}
-    @if ($kategori_barang->onFirstPage())
+    @if ($pengguna->onFirstPage())
         <span style="padding: 8px 12px; background-color: #e5e7eb; color: #aaa; border-radius: 5px;">&laquo;</span>
     @else
-        <a href="{{ $kategori_barang->previousPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+        <a href="{{ $pengguna->previousPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
            style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
             &laquo;
         </a>
     @endif
 
     {{-- Page Links --}}
-    @for ($i = 1; $i <= $kategori_barang->lastPage(); $i++)
-        @if ($i == $kategori_barang->currentPage())
+    @for ($i = 1; $i <= $pengguna->lastPage(); $i++)
+        @if ($i == $pengguna->currentPage())
             <span style="padding: 8px 12px; background-color: #2563eb; color: white; border-radius: 5px;">{{ $i }}</span>
         @else
-            <a href="{{ $kategori_barang->url($i) }}{{ request('search') ? '&search=' . request('search') : '' }}"
+            <a href="{{ $pengguna->url($i) }}{{ request('search') ? '&search=' . request('search') : '' }}"
                style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
                 {{ $i }}
             </a>
@@ -273,8 +285,8 @@
     @endfor
 
     {{-- Next --}}
-    @if ($kategori_barang->hasMorePages())
-        <a href="{{ $kategori_barang->nextPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+    @if ($pengguna->hasMorePages())
+        <a href="{{ $pengguna->nextPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
            style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
             &raquo;
         </a>
@@ -283,7 +295,6 @@
     @endif
 </div>
 @endif
-
         </div>
     </div>
 </div>

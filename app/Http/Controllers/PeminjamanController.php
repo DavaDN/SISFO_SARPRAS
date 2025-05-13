@@ -13,9 +13,19 @@ class PeminjamanController extends Controller
     // WEB (ADMIN)
     // =============================
 
-    public function index()
+    public function index(Request $request)
     {
-        $peminjaman = Peminjaman::with(['user', 'barang'])->get();
+        $query = Peminjaman::query();
+
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+        if ($request->has('sort')) {
+            $query->orderBy('name', $request->query('sort'));
+        }
+
+        $peminjaman = $query->paginate(5)->appends($request->query());
+        
         return view('peminjaman.peminjaman', compact('peminjaman'));
     }
 
@@ -61,7 +71,7 @@ class PeminjamanController extends Controller
     public function apiStore(Request $request)
     {
         $request->validate([
-            'barang_id' => 'required|exists:barangs,id',
+            'barang_id' => 'required|exists:barang,id',
             'jumlah' => 'required|integer|min:1',
         ]);
 

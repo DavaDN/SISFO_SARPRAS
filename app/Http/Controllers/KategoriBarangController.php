@@ -19,7 +19,7 @@ class KategoriBarangController extends Controller
             $query->orderBy('name', $request->query('sort'));
         }
 
-        $kategori_barang = $query->paginate(10)->appends($request->query());
+        $kategori_barang = $query->paginate(5)->appends($request->query());
 
         return view('kategori-barang/kategori-barang', compact('kategori_barang'));
     }
@@ -28,7 +28,7 @@ class KategoriBarangController extends Controller
 
     public function create()
     {
-        return view('kategori-barang.create');
+        return view('Kategori-barang.tambahkategori');
     }
 
     public function store(Request $request)
@@ -40,7 +40,7 @@ class KategoriBarangController extends Controller
 
     public function edit(KategoriBarang $kategori_barang)
     {
-        return view('kategori-barang.edit', compact('kategori_barang'));
+        return view('kategori-barang.editkategori', compact('kategori_barang'));
     }
 
     public function update(Request $request, KategoriBarang $kategori_barang)

@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard | SISFO SARPRAS</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Edit Pengguna | SISFO SARPRAS</title>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <style>
-        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
         html, body {
             margin: 0;
@@ -14,11 +16,14 @@
             height: 100%;
             background-color: #f0f2f5;
             color: #333;
-            overflow: hidden;
         }
 
-        .container { display: flex; height: 100vh; }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
 
+        /* SIDEBAR */
         .sidebar {
             width: 250px;
             background-color: #111827;
@@ -50,7 +55,9 @@
             border-radius: 12px 0 0 12px;
         }
 
-        .nav a:hover { background-color: #19376D; }
+        .nav a:hover {
+            background-color: #19376D;
+        }
 
         .logout {
             padding: 24px;
@@ -67,6 +74,7 @@
             font-size: 15px;
         }
 
+        /* MAIN */
         .main {
             flex: 1;
             display: flex;
@@ -101,52 +109,74 @@
         .content {
             padding: 30px;
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            font-weight: bold;
+            overflow-y: auto;
         }
 
-        .content h1 { margin-bottom: 30px; }
-
-        .cards {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
+        .content h2 {
+            font-size: 24px;
+            color: #1e3a8a;
+            margin-bottom: 20px;
         }
 
-        .card {
-            flex: 1;
+        .btn {
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
             background-color: white;
             padding: 20px;
-            border-left: 8px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 400px;
+            margin: 0 auto;
         }
 
-        .card.blue { border-color: #3B82F6; }
-        .card.green { border-color: #22c55e; }
-        .card.red { border-color: #ef4444; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
 
-        .card .label {
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
             font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #2563eb;
+            color: white;
             font-weight: bold;
-            margin-bottom: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .card .value {
-            font-size: 28px;
-            font-weight: bold;
+        button:hover {
+            background-color: #1d4ed8;
         }
 
-        .chart-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            flex-grow: 1;
+        .alert {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 1rem;
         }
-
-        canvas { max-width: 100%; }
     </style>
 </head>
 <body>
@@ -158,14 +188,14 @@
         <div>
             <div class="title">SISFO SARPRAS</div>
             <div class="nav">
-                <a href="{{ route('dashboard') }}" class="active">🏠 Dashboard</a>
+                <a href="{{ route('dashboard') }}">🏠 Dashboard</a>
                 <a href="{{ route('barang.index') }}">💼 Barang</a>
                 <a href="{{ route('kategori-barang.index') }}">📦 Kategori</a>
                 <a href="{{ route('peminjaman.index') }}">📥 Peminjaman</a>
                 <a href="{{ route('pengembalian.index') }}">✅ Pengembalian</a>
                 <a href="{{ route('laporan.index') }}">📊 Laporan</a>
-                <a href="{{ route('pengguna.index') }}">👥 Pengguna</a>
-            </div>            
+                <a href="{{ route('pengguna.index') }}" class="active">👥 Pengguna</a>
+            </div>
         </div>
         <div class="logout">
             <form method="POST" action="{{ route('logout') }}">
@@ -175,7 +205,7 @@
         </div>
     </div>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <div class="main">
         <div class="topbar">
             <div class="logo-area">
@@ -188,66 +218,36 @@
         </div>
 
         <div class="content">
-            <h1>Dashboard</h1>
+            <h2>Edit Pengguna</h2>
 
-            <!-- Cards -->
-            <div class="cards">
-                <div class="card blue">
-                    <div class="label">Total Barang</div>
-                    <div class="value">{{ $totalBarang }}</div>
+            <!-- Alert Message -->
+            @if (session('success'))
+                <div class="alert">
+                    {{ session('success') }}
                 </div>
-                <div class="card green">
-                    <div class="label">Peminjaman Hari Ini</div>
-                    <div class="value">{{ $peminjamanHariIni }}</div>
-                </div>
-                <div class="card red">
-                    <div class="label">Pengembalian Hari Ini</div>
-                    <div class="value">{{ $pengembalianHariIni }}</div>
-                </div>
-            </div>
+            @endif
 
-            <!-- Chart -->
-            <div class="chart-container">
-                <h3 style="margin-bottom: 20px;">Peminjaman per Minggu</h3>
-                <canvas id="peminjamanChart" height="100"></canvas>
+            <!-- Form for Editing Pengguna -->
+            <div class="form-container">
+                <form method="POST" action="{{ route('pengguna.update', $pengguna->id) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <label for="name">Nama Pengguna</label>
+                    <input type="text" id="name" name="name" value="{{ old('name', $pengguna->name) }}" required>
+
+                    <label for="email">Email Pengguna</label>
+                    <input type="email" id="email" name="email" value="{{ old('email', $pengguna->email) }}" required>
+
+                    <label for="password">Password (Kosongkan jika tidak ingin mengubah)</label>
+                    <input type="password" id="password" name="password">
+
+                    <button type="submit">Perbarui Pengguna</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Chart.js Script -->
-<script>
-    const ctx = document.getElementById('peminjamanChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($labelHari) !!},
-            datasets: [{
-                label: 'Jumlah Peminjaman',
-                data: {!! json_encode($dataHari) !!},
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59,130,246,0.2)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
-    });
-</script>
 
 </body>
 </html>

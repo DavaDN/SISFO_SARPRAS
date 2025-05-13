@@ -199,7 +199,7 @@
                 <a href="{{ route('peminjaman.index') }}" class="active">📥 Peminjaman</a>
                 <a href="{{ route('pengembalian.index') }}">✅ Pengembalian</a>
                 <a href="{{ route('laporan.index') }}">📊 Laporan</a>
-                <a href="{{ route('user.index') }}">👥 User</a>
+                <a href="{{ route('pengguna.index') }}">👥 Pengguna</a>
             </div>
         </div>
         <div class="logout">
@@ -225,8 +225,17 @@
         <div class="content">
             <h2>Data Peminjaman</h2>
             <div class="search-box">
-                <form method="GET" action="peminjaman">
-                    <input type="text" name="search" placeholder="Cari daftar pinjam..." value="{{ request('search') }}">
+                <form method="GET" action="{{ route('kategori-barang.index') }}" style="margin-bottom: 20px;">
+                    <input type="text" name="search" placeholder="Cari nama kategori..." value="{{ request('search') }}"
+                           style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 250px;">
+                    <button type="submit"
+                            style="padding: 8px 12px; background-color: #2563eb; color: white; border: none; border-radius: 6px; margin-left: 6px;">
+                        Cari
+                    </button>
+                    <a href="{{ route('kategori-barang.index') }}"
+                       style="padding: 8px 12px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; margin-left: 6px;">
+                        Reset
+                    </a>
                 </form>
             </div>
             <table>
@@ -241,7 +250,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($peminjaman as $pinjam)
+                    @forelse($peminjaman as $pinjam)
                     <tr>
                         <td>{{ $pinjam->user->name }}</td>
                         <td>{{ $pinjam->barang->nama }}</td>
@@ -271,9 +280,47 @@
                             @endif
                         </td>
                     </tr>
-                    @endforeach
+                @empty
+                <tr><td colspan="3">Tidak ada data ditemukan.</td></tr>
+            @endforelse
                 </tbody>
             </table>
+             <!-- Pagination -->
+@if ($peminjaman->lastPage() > 1)
+<div style="margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap;">
+    {{-- Prev --}}
+    @if ($peminjaman->onFirstPage())
+        <span style="padding: 8px 12px; background-color: #e5e7eb; color: #aaa; border-radius: 5px;">&laquo;</span>
+    @else
+        <a href="{{ $peminjaman->previousPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+           style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
+            &laquo;
+        </a>
+    @endif
+
+    {{-- Page Links --}}
+    @for ($i = 1; $i <= $peminjaman->lastPage(); $i++)
+        @if ($i == $peminjaman->currentPage())
+            <span style="padding: 8px 12px; background-color: #2563eb; color: white; border-radius: 5px;">{{ $i }}</span>
+        @else
+            <a href="{{ $peminjaman->url($i) }}{{ request('search') ? '&search=' . request('search') : '' }}"
+               style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
+                {{ $i }}
+            </a>
+        @endif
+    @endfor
+
+    {{-- Next --}}
+    @if ($peminjaman->hasMorePages())
+        <a href="{{ $peminjaman->nextPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+           style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
+            &raquo;
+        </a>
+    @else
+        <span style="padding: 8px 12px; background-color: #e5e7eb; color: #aaa; border-radius: 5px;">&raquo;</span>
+    @endif
+</div>
+@endif
         </div>
     </div>
 </div>
