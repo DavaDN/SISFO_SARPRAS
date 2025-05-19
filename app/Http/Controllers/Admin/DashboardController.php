@@ -13,18 +13,25 @@ class DashboardController extends Controller
     public function index()
     {
         $totalBarang = Barang::count();
-        $peminjamanHariIni = Peminjaman::whereDate('tanggal_pinjam', Carbon::today())->count();
-        $pengembalianHariIni = Pengembalian::whereDate('tanggal_kembali', Carbon::today())->count();
+
+        // Hanya peminjaman yang diterima hari ini
+        $peminjamanHariIni = Peminjaman::where('status', 'diterima')
+            ->whereDate('tanggal_pinjam', Carbon::today())
+            ->count();
+
+        $pengembalianHariIni = Pengembalian::where('status', 'diterima')->whereDate('tanggal_kembali', Carbon::today())->count();
 
         // Label hari Senin sampai Minggu
         $labelHari = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
         $dataHari = [];
 
-        // Ambil jumlah peminjaman tiap hari dalam minggu ini
+        // Ambil jumlah peminjaman yang diterima per hari dalam minggu ini
         $startOfWeek = Carbon::now()->startOfWeek(); // Senin
         foreach (range(0, 6) as $i) {
             $tanggal = $startOfWeek->copy()->addDays($i)->format('Y-m-d');
-            $jumlah = Peminjaman::whereDate('tanggal_pinjam', $tanggal)->count();
+            $jumlah = Peminjaman::where('status', 'diterima')
+                ->whereDate('tanggal_pinjam', $tanggal)
+                ->count();
             $dataHari[] = $jumlah;
         }
 

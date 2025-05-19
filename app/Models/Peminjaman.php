@@ -11,11 +11,11 @@ class Peminjaman extends Model
 
     protected $table = 'peminjaman'; // ini wajib kalau kamu pakai nama tabel tunggal
 
-    protected $fillable = ['user_id', 'barang_id', 'tanggal_pinjam', 'jumlah'];
+    protected $fillable = ['pengguna_id', 'barang_id', 'tanggal_pinjam','tanggal_kembali', 'kelas','keperluan','jumlah'];
 
-    public function user()
+    public function pengguna()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pengguna::class);
     }
 
     public function barang()

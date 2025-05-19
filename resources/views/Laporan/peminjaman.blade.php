@@ -126,6 +126,16 @@
         .button-group a.back {
             background-color: #6b7280;
         }
+        .button-group select {
+            padding: 10px 16px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
 
         table {
             width: 100%;
@@ -182,35 +192,47 @@
                 <iconify-icon icon="mdi:school-outline" style="font-size: 26px; color: #1f2937;"></iconify-icon>
                 SISFO SARPRAS
             </div>
-            <div class="avatar">
-                <iconify-icon icon="codicon:account" width="28" height="28" style="color: #000;"></iconify-icon>
-            </div>
         </div>
         <div class="content">
     <h2>Laporan Peminjaman</h2>
 
-    <div class="button-group">
-        <a href="{{ route('laporan.peminjaman.pdf') }}">📄 Download PDF</a>
-        <a href="{{ route('laporan.peminjaman.excel') }}">📊 Download Excel</a>
+    <div class="button-group" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+        <form method="GET" action="{{ route('laporan.peminjaman') }}">
+            <select name="status" onchange="this.form.submit()">
+                <option value="">📋 Semua Status</option>
+                <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>✅ Diterima</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>⏳ Pending</option>
+                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>❌ Ditolak</option>
+            </select>
+        </form>
+        <a href="{{ route('laporan.peminjaman.pdf', ['status' => request('status')]) }}">📄 Download PDF</a>
+        <a href="{{ route('laporan.peminjaman.excel', ['status' => request('status')]) }}">📊 Download Excel</a>
         <a href="{{ route('laporan.index') }}" class="back">🔙 Kembali</a>
     </div>
+
 
     <table>
         <thead>
         <tr>
-            <th>User</th>
+            <th>Pengguna</th>
             <th>Barang</th>
             <th>Tanggal Pinjam</th>
+            <th>Tanggal Kembali</th>
+            <th>Keperluan</th>
+            <th>Kelas</th>
             <th>Jumlah</th>
         </tr>
         </thead>
         <tbody>
         @forelse($data as $row)
             <tr>
-                <td>{{ $row->user->name }}</td>
-                <td>{{ $row->barang->nama }}</td>
-                <td>{{ $row->tanggal_pinjam }}</td>
-                <td>{{ $row->jumlah }}</td>
+                <td>{{ $row['pengguna'] }}</td>
+                <td>{{ $row['barang'] }}</td>
+                <td>{{ $row['tanggal_pinjam'] }}</td>
+                <td>{{ $row['tanggal_kembali'] }}</td>
+                <td>{{ $row['keperluan'] }}</td>
+                <td>{{ $row['kelas'] }}</td>
+                <td>{{ $row['jumlah'] }}</td>
             </tr>
         @empty
             <tr><td colspan="4">Tidak ada data peminjaman.</td></tr>

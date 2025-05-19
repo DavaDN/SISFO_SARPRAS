@@ -217,26 +217,36 @@
                 <iconify-icon icon="mdi:school-outline" style="font-size: 26px; color: #1f2937;"></iconify-icon>
                 SISFO SARPRAS
             </div>
-            <div class="avatar">
-                <iconify-icon icon="codicon:account" width="30" height="30" style="color: #000;"></iconify-icon>
-            </div>
         </div>
 
         <div class="content">
             <h2>Data Pengembalian</h2>
             <div class="search-box">
-                <form method="GET" action="pengembalian">
-                    <input type="text" name="search" placeholder="Cari daftar kembali..." value="{{ request('search') }}">
+                <form method="GET" action="{{ route('pengembalian.index') }}" style="margin-bottom: 20px;">
+                    <input type="text" name="search" placeholder="Cari daftar peminjaman..." value="{{ request('search') }}"
+                           style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 250px;">
                     <button type="submit"
                             style="padding: 8px 12px; background-color: #2563eb; color: white; border: none; border-radius: 6px; margin-left: 6px;">
                         Cari
                     </button>
+                    <a href="{{ route('pengembalian.index') }}"
+                       style="padding: 8px 12px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; margin-left: 6px;">
+                        Reset
+                    </a>
+                    <form method="GET" action="{{ route('pengembalian.index') }}" style="margin-bottom: 20px;">
+                    <select name="status" onchange="this.form.submit()" style="padding: 8px 12px; background-color: #2563eb; color: white;margin-left: 6px; border: none; border-radius: 6px; font-size: 14px;">
+                        <option value="">Sortir Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
+                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
+                </form>
                 </form>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th>User</th>
+                        <th>Pengguna</th>
                         <th>Barang</th>
                         <th>Tanggal kembali</th>
                         <th>Kondisi</th>
@@ -246,10 +256,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($Pengembalian as $kembali)
+                    @forelse($pengembalian as $kembali)
                     <tr>
-                        <td>{{ $kembali->user->name }}</td>
-                        <td>{{ $kembali->barang->nama }}</td>
+                        <td>{{ $kembali->peminjaman->pengguna->name }}</td>
+                        <td>{{ $kembali->peminjaman->barang->nama }}</td>
                         <td>{{ $kembali->tanggal_kembali }}</td>
                         <td>{{ $kembali->kondisi }}</td>
                         <td>{{ $kembali->jumlah }}</td>
@@ -283,24 +293,24 @@
                 </tbody>
             </table>
              <!-- Pagination -->
-@if ($Pengembalian->lastPage() > 1)
+@if ($pengembalian->lastPage() > 1)
 <div style="margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap;">
     {{-- Prev --}}
-    @if ($Pengembalian->onFirstPage())
+    @if ($pengembalian->onFirstPage())
         <span style="padding: 8px 12px; background-color: #e5e7eb; color: #aaa; border-radius: 5px;">&laquo;</span>
     @else
-        <a href="{{ $Pengembalian->previousPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+        <a href="{{ $pengembalian->previousPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
            style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
             &laquo;
         </a>
     @endif
 
     {{-- Page Links --}}
-    @for ($i = 1; $i <= $Pengembalian->lastPage(); $i++)
-        @if ($i == $Pengembalian->currentPage())
+    @for ($i = 1; $i <= $pengembalian->lastPage(); $i++)
+        @if ($i == $pengembalian->currentPage())
             <span style="padding: 8px 12px; background-color: #2563eb; color: white; border-radius: 5px;">{{ $i }}</span>
         @else
-            <a href="{{ $Pengembalian->url($i) }}{{ request('search') ? '&search=' . request('search') : '' }}"
+            <a href="{{ $pengembalian->url($i) }}{{ request('search') ? '&search=' . request('search') : '' }}"
                style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
                 {{ $i }}
             </a>
@@ -308,8 +318,8 @@
     @endfor
 
     {{-- Next --}}
-    @if ($Pengembalian->hasMorePages())
-        <a href="{{ $Pengembalian->nextPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
+    @if ($pengembalian->hasMorePages())
+        <a href="{{ $pengembalian->nextPageUrl() }}{{ request('search') ? '&search=' . request('search') : '' }}"
            style="padding: 8px 12px; background-color: white; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; color: #2563eb;">
             &raquo;
         </a>

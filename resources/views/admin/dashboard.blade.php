@@ -74,19 +74,20 @@
         }
 
         .topbar {
-            height: 80px;
+            height: 110px; /* tambah tinggi */
             background-color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 30px;
+            padding: 0 40px; /* opsional: tambah horizontal spacing */
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
+
 
         .topbar .logo-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 16px;
             font-weight: bold;
             font-size: 20px;
             color: #1f2937;
@@ -181,9 +182,6 @@
             <div class="logo-area">
                 <iconify-icon icon="mdi:school-outline" style="font-size: 26px; color: #1f2937;"></iconify-icon>
                 SISFO SARPRAS
-            </div>
-            <div class="avatar">
-                <iconify-icon icon="codicon:account" width="30" height="30" style="color: #000; margin-top:9px;"></iconify-icon>
             </div>
         </div>
 

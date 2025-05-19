@@ -1,49 +1,61 @@
 <?php
-//api
-namespace App\Http\Controllers\Api;
 
-use App\Models\Pengembalian;
-use Illuminate\Http\Request;
-use App\Models\Peminjaman;
-use App\Http\Controllers\Controller;
-
-class PengembalianController extends Controller
-{
-    public function store(Request $request)
-    {
-        $request->validate([
-            'peminjaman_id' => 'required|exists:peminjaman,id',
-        ]);
-
-        return Pengembalian::create([
-            'peminjaman_id' => $request->peminjaman_id,
-            'tanggal_kembali' => now(),
-        ]);
-    }
-}
-//web
 namespace App\Http\Controllers;
 
 use App\Models\Pengembalian;
 use Illuminate\Http\Request;
+use App\Models\Peminjaman;
+use App\Models\Pengguna;
+use App\Http\Controllers\Controller;
 
 class PengembalianController extends Controller
 {
+    public function Apistore(Request $request)
+    {
+        $request->validate([
+            'peminjaman_id' => 'required|exists:peminjaman,id',
+            'jumlah' => 'required|integer|min:1',
+            'kondisi' => 'required|string|max:255',
+        ]);
+
+        $pengembalian = Pengembalian::create([
+            'peminjaman_id' => $request->peminjaman_id,
+            'tanggal_kembali' => now(),
+            'jumlah' => $request->jumlah, // ← tambahkan ini
+            'kondisi' => $request->kondisi,
+            'status' => 'pending' // jika kamu pakai approval admin
+        ]);
+
+
+        return response()->json([
+            'message' => 'Pengembalian berhasil diajukan.',
+            'data' => $pengembalian,
+        ]);
+    }
+
+    //web
+
+
+
     public function index(Request $request)
     {
-        $query = Pengembalian::query();
+        $query = Pengembalian::with('peminjaman.pengguna', 'peminjaman.barang');
 
         if ($request->filled('search')) {
-            $query->where('nama', 'like', '%' . $request->search . '%');
-        }
-        if ($request->has('sort')) {
-            $query->orderBy('name', $request->query('sort'));
+            $query->whereHas('peminjaman.barang', function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%');
+            });
         }
 
-        $Pengembalian = $query->paginate(5)->appends($request->query());
-        
-        return view('Pengembalian.Pengembalian', compact('Pengembalian'));
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $pengembalian = $query->paginate(5)->appends($request->query());
+
+        return view('pengembalian.pengembalian', compact('pengembalian'));
     }
+
 
     public function create()
     {
@@ -58,11 +70,20 @@ class PengembalianController extends Controller
     public function setujui($id)
     {
         $kembali = Pengembalian::findOrFail($id);
+
+        // Pastikan hanya menambahkan stok sekali
+        if ($kembali->status !== 'diterima') {
+            $barang = $kembali->peminjaman->barang;
+            $barang->stok += $kembali->peminjaman->jumlah;
+            $barang->save();
+        }
+
         $kembali->status = 'diterima';
         $kembali->save();
 
         return redirect()->back()->with('success', 'Pengembalian disetujui.');
     }
+
 
     public function tolak($id)
     {

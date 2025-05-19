@@ -113,5 +113,13 @@ class BarangController extends Controller
             'message' => 'List Data Barang',
             'data' => $barang
         ]);
+        
+        $query = Barang::query();
+
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+
+        return response()->json($query->get());
     }
 }

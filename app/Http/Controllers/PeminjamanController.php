@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Peminjaman;
 use App\Models\Barang;
-use App\Models\User;
+use App\Models\Pengguna;
 use Illuminate\Http\Request;
 
 class PeminjamanController extends Controller
@@ -15,19 +15,28 @@ class PeminjamanController extends Controller
 
     public function index(Request $request)
     {
-        $query = Peminjaman::query();
+        $query = Peminjaman::with('barang', 'pengguna')
+            ->whereDoesntHave('pengembalian'); // hanya yang belum dikembalikan
 
         if ($request->filled('search')) {
-            $query->where('nama', 'like', '%' . $request->search . '%');
+            $query->whereHas('barang', function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%');
+            });
         }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         if ($request->has('sort')) {
-            $query->orderBy('name', $request->query('sort'));
+            $query->orderBy('tanggal_pinjam', $request->query('sort'));
         }
 
         $peminjaman = $query->paginate(5)->appends($request->query());
-        
+
         return view('peminjaman.peminjaman', compact('peminjaman'));
     }
+
 
     public function create()
     {
@@ -42,11 +51,20 @@ class PeminjamanController extends Controller
     public function setujui($id)
     {
         $pinjam = Peminjaman::findOrFail($id);
+
+        // Cek apakah status belum diterima agar stok tidak dikurangi dua kali
+        if ($pinjam->status !== 'diterima') {
+            $barang = $pinjam->barang;
+            $barang->stok -= $pinjam->jumlah;
+            $barang->save();
+        }
+
         $pinjam->status = 'diterima';
         $pinjam->save();
 
         return redirect()->back()->with('success', 'Peminjaman disetujui.');
     }
+
 
     public function tolak($id)
     {
@@ -61,14 +79,16 @@ class PeminjamanController extends Controller
     // API (USER)
     // =============================
 
-    public function apiIndex(Request $request)
+    public function ApiIndex(Request $request)
     {
         return Peminjaman::with('barang')
-            ->where('user_id', $request->user()->id)
+            ->where('pengguna_id', $request->user()->id)
+            ->whereDoesntHave('pengembalian') // hanya yang belum dikembalikan
             ->get();
     }
 
-    public function apiStore(Request $request)
+
+    public function ApiStore(Request $request)
     {
         $request->validate([
             'barang_id' => 'required|exists:barang,id',
@@ -76,16 +96,29 @@ class PeminjamanController extends Controller
         ]);
 
         return Peminjaman::create([
-            'user_id' => $request->user()->id,
+            'pengguna_id' => $request->user()->id,
             'barang_id' => $request->barang_id,
+            'keperluan' => $request->keperluan,
+            'kelas' => $request->kelas,
             'jumlah' => $request->jumlah,
             'tanggal_pinjam' => now(),
+            'tanggal_kembali' => $request->tanggal_kembali,
             'status' => 'pending',
         ]);
     }
 
-    public function apiReport(Request $request)
+    public function ApiReport(Request $request)
     {
-        return $this->apiIndex($request);
+        $query = Peminjaman::with('barang')
+            ->where('pengguna_id', $request->user()->id);
+
+        // Filter status jika ada
+        if ($request->filled('status') && $request->status !== 'semua') {
+            $query->where('status', $request->status);
+        }
+
+        return response()->json([
+            'data' => $query->get(),
+        ]);
     }
 }

@@ -80,13 +80,15 @@ Route::middleware('auth')->group(function () {
         return view('laporan.laporan', compact('judul', 'headers', 'data'));
     })->name('laporan.index');
 
-    Route::get('/laporan/stok', [LaporanController::class, 'stok'])->name('laporan.stok');
-    Route::get('/laporan/peminjaman', [LaporanController::class, 'peminjaman'])->name('laporan.peminjaman');
-    Route::get('/laporan/pengembalian', [LaporanController::class, 'pengembalian'])->name('laporan.pengembalian');
+    Route::get('/laporan/stok', [LaporanController::class, 'laporanstok'])->name('laporan.stok');
     Route::get('/laporan/stok/pdf', [LaporanController::class, 'exportStokPdf'])->name('laporan.stok.pdf');
     Route::get('/laporan/stok/excel', [LaporanController::class, 'exportStokExcel'])->name('laporan.stok.excel');
+
+    Route::get('/laporan/peminjaman', [LaporanController::class, 'laporanpeminjaman'])->name('laporan.peminjaman');
     Route::get('/laporan/peminjaman/pdf', [LaporanController::class, 'exportPeminjamanPdf'])->name('laporan.peminjaman.pdf');
     Route::get('/laporan/peminjaman/excel', [LaporanController::class, 'exportPeminjamanExcel'])->name('laporan.peminjaman.excel');
+
+    Route::get('/laporan/pengembalian', [LaporanController::class, 'laporanpengembalian'])->name('laporan.pengembalian');
     Route::get('/laporan/pengembalian/pdf', [LaporanController::class, 'exportPengembalianPdf'])->name('laporan.pengembalian.pdf');
     Route::get('/laporan/pengembalian/excel', [LaporanController::class, 'exportPengembalianExcel'])->name('laporan.pengembalian.excel');
 });

@@ -11,8 +11,18 @@ class Pengembalian extends Model
 
     protected $table = 'pengembalian'; // penting karena nama tabel tidak plural
 
-    protected $fillable = ['peminjaman_id', 'tanggal_kembali'];
+    protected $fillable = [
+        'peminjaman_id',
+        'tanggal_kembali',
+        'jumlah',
+        'kondisi',
+        'status',
+    ];
 
+    public function pengguna()
+    {
+        return $this->belongsTo(Pengguna::class);
+    }
     public function peminjaman()
     {
         return $this->belongsTo(Peminjaman::class);

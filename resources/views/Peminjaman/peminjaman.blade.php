@@ -217,33 +217,41 @@
                 <iconify-icon icon="mdi:school-outline" style="font-size: 26px; color: #1f2937;"></iconify-icon>
                 SISFO SARPRAS
             </div>
-            <div class="avatar">
-                <iconify-icon icon="codicon:account" width="30" height="30" style="color: #000;"></iconify-icon>
-            </div>
         </div>
 
         <div class="content">
             <h2>Data Peminjaman</h2>
             <div class="search-box">
-                <form method="GET" action="{{ route('kategori-barang.index') }}" style="margin-bottom: 20px;">
-                    <input type="text" name="search" placeholder="Cari nama kategori..." value="{{ request('search') }}"
+                <form method="GET" action="{{ route('peminjaman.index') }}" style="margin-bottom: 20px;">
+                    <input type="text" name="search" placeholder="Cari daftar peminjaman..." value="{{ request('search') }}"
                            style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 250px;">
                     <button type="submit"
                             style="padding: 8px 12px; background-color: #2563eb; color: white; border: none; border-radius: 6px; margin-left: 6px;">
                         Cari
                     </button>
-                    <a href="{{ route('kategori-barang.index') }}"
+                    <a href="{{ route('peminjaman.index') }}"
                        style="padding: 8px 12px; background-color: #6b7280; color: white; text-decoration: none; border-radius: 6px; margin-left: 6px;">
                         Reset
                     </a>
+                    <form method="GET" action="{{ route('peminjaman.index') }}" style="margin-bottom: 20px;">
+                    <select name="status" onchange="this.form.submit()" style="padding: 8px 12px; background-color: #2563eb; color: white;margin-left: 6px; border: none; border-radius: 6px; font-size: 14px;">
+                        <option value="">Sortir Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
+                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
+                </form>
                 </form>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th>User</th>
+                        <th>Pengguna</th>
                         <th>Barang</th>
                         <th>Tanggal Pinjam</th>
+                        <th>Tanggal Kembali</th>
+                        <th>Keperluan</th>
+                        <th>Kelas</th>
                         <th>Jumlah</th>
                         <th>Status</th>
                         <th>Aksi</th>
@@ -252,9 +260,12 @@
                 <tbody>
                     @forelse($peminjaman as $pinjam)
                     <tr>
-                        <td>{{ $pinjam->user->name }}</td>
+                        <td>{{ $pinjam->pengguna->name }}</td>
                         <td>{{ $pinjam->barang->nama }}</td>
                         <td>{{ $pinjam->tanggal_pinjam }}</td>
+                        <td>{{ $pinjam->tanggal_kembali }}</td>
+                        <td>{{ $pinjam->keperluan }}</td>
+                        <td>{{ $pinjam->kelas }}</td>
                         <td>{{ $pinjam->jumlah }}</td>
                         <td>
                             @if ($pinjam->status == 'pending')

@@ -21,12 +21,12 @@ Route::middleware([
     Route::get('/barang', [BarangController::class, 'indexApi']);
 
     // Peminjaman
-    Route::get('/peminjaman', [PeminjamanController::class, 'index']);
-    Route::post('/peminjaman', [PeminjamanController::class, 'store']);
+    Route::get('/peminjaman', [PeminjamanController::class, 'Apiindex']);
+    Route::post('/peminjaman', [PeminjamanController::class, 'Apistore']);
 
     // Pengembalian
-    Route::post('/pengembalian', [PengembalianController::class, 'store']);
+    Route::post('/pengembalian', [PengembalianController::class, 'Apistore']);
 
     // Report
-    Route::get('/report/peminjaman', [PeminjamanController::class, 'report']);
+    Route::get('/report/peminjaman', [PeminjamanController::class, 'Apireport']);
 });

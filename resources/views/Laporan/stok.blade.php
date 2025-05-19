@@ -176,9 +176,6 @@
                 <iconify-icon icon="mdi:school-outline" style="font-size: 26px; color: #1f2937;"></iconify-icon>
                 SISFO SARPRAS
             </div>
-            <div class="avatar">
-                <iconify-icon icon="codicon:account" width="28" height="28" style="color: #000;"></iconify-icon>
-            </div>
         </div>
 
         <div class="content">
@@ -202,7 +199,7 @@
                     @forelse($data as $row)
                         <tr>
                             @foreach($row as $cell)
-                                <td>{{ $cell }}</td>
+                                <td>{!! $cell !!}</td>
                             @endforeach
                         </tr>
                     @empty
