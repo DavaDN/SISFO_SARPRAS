@@ -17,13 +17,12 @@ class LaporanController extends Controller
     {
         $barang = Barang::with('kategori')->get();
         $judul = 'Laporan Stok Barang';
-        $headers = ['ID', 'Nama', 'Kategori', 'Stok', 'gambar'];
+        $headers = ['ID', 'Nama', 'Kategori', 'Stok'];
         $data = $barang->map(fn($b) => [
             $b->id,
             $b->nama,
             $b->kategori->nama ?? '-',
             $b->stok,
-            $b->gambar ? '<img src="' . asset('storage/' . $b->gambar) . '" width="50" height="50">' : '-'
         ]);
 
         return view('laporan.stok', compact('judul', 'headers', 'data'));
@@ -35,12 +34,11 @@ class LaporanController extends Controller
             $b->nama,
             $b->kategori->nama ?? '-',
             $b->stok,
-            $b->gambar ? '<img src="' . asset('storage/' . $b->gambar) . '" width="50" height="50">' : '-'
         ]);
 
         $pdf = Pdf::loadView('laporan.template_pdf', [
             'judul' => 'Laporan Stok Barang',
-            'headers' => ['ID', 'Nama', 'Kategori', 'Stok', 'gambar'],
+            'headers' => ['ID', 'Nama', 'Kategori', 'Stok'],
             'data' => $data,
         ]);
 
@@ -54,10 +52,9 @@ class LaporanController extends Controller
             $b->nama,
             $b->kategori->nama ?? '-',
             $b->stok,
-            $b->gambar ? '<img src="' . asset('storage/' . $b->gambar) . '" width="50" height="50">' : '-'
         ])->toArray();
 
-        return Excel::download(new GenericExport(['ID', 'Nama', 'Kategori', 'Stok', 'gambar'], $data), 'laporan_stok_barang.xlsx');
+        return Excel::download(new GenericExport(['ID', 'Nama', 'Kategori', 'Stok' ], $data), 'laporan_stok_barang.xlsx');
     }
 
 

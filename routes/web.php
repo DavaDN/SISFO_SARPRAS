@@ -31,13 +31,12 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard
     Route::middleware(['auth'])->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/admin/notifikasi', [DashboardController::class, 'getNotif'])->name('notifikasi.refresh');
+
 
     // Manajemen User Mobile (dibuat oleh admin)
     Route::resource('/pengguna', PenggunaController::class)->only(['index', 'create', 'store']);
-    // Route untuk edit pengguna
-    Route::get('pengguna/{pengguna}/edit', [PenggunaController::class, 'edit'])->name('pengguna.edit');
-
-    // Route untuk update pengguna
+    
     Route::put('pengguna/{pengguna}', [PenggunaController::class, 'update'])->name('pengguna.update');
     Route::delete('pengguna/{pengguna}', [PenggunaController::class, 'destroy'])->name('pengguna.destroy');
 
@@ -45,12 +44,10 @@ Route::middleware('auth')->group(function () {
 
     // Kategori Barang
     Route::resource('/kategori-barang', KategoriBarangController::class);
-    Route::get('tambahkategori', [KategoriBarangController::class, 'create'])->name('kategori.create');
     Route::post('/tambahkategori', [KategoriBarangController::class, 'store'])->name('kategori.store');
 
     // Barang
     Route::resource('/barang', BarangController::class);
-    Route::get('tambahbarang', [BarangController::class, 'create'])->name('barang.tambah');
     Route::post('/tambahbarang', [BarangController::class, 'store'])->name('barang.store');
 
 

@@ -24,8 +24,12 @@ class PeminjamanController extends Controller
             });
         }
 
+        // 👇 Jika ada filter status, tampilkan sesuai status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        } else {
+            // 👇 Default: sembunyikan yang ditolak
+            $query->where('status', '!=', 'ditolak');
         }
 
         if ($request->has('sort')) {
@@ -36,6 +40,7 @@ class PeminjamanController extends Controller
 
         return view('peminjaman.peminjaman', compact('peminjaman'));
     }
+
 
 
     public function create()
@@ -66,14 +71,21 @@ class PeminjamanController extends Controller
     }
 
 
-    public function tolak($id)
+    public function tolak(Request $request, $id)
     {
+        $request->validate([
+            'alasan_ditolak' => 'required|string|max:255',
+        ]);
+
         $pinjam = Peminjaman::findOrFail($id);
         $pinjam->status = 'ditolak';
+        $pinjam->alasan_ditolak = $request->alasan_ditolak;
         $pinjam->save();
 
-        return redirect()->back()->with('success', 'Peminjaman ditolak.');
+        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman ditolak.');
     }
+
+
 
     // =============================
     // API (USER)

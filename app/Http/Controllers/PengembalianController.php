@@ -12,26 +12,42 @@ class PengembalianController extends Controller
 {
     public function Apistore(Request $request)
     {
+        $peminjaman = Peminjaman::where('id', $request->peminjaman_id)
+            ->where('pengguna_id', $request->user()->id)
+            ->first();
+
+        if (!$peminjaman) {
+            return response()->json(['message' => 'Peminjaman tidak ditemukan atau bukan milik Anda.'], 403);
+        }
+
         $request->validate([
             'peminjaman_id' => 'required|exists:peminjaman,id',
             'jumlah' => 'required|integer|min:1',
-            'kondisi' => 'required|string|max:255',
+            'kondisi' => 'required|file|mimes:jpg,jpeg,png|max:10000', // jika berupa gambar
         ]);
+
+        $peminjaman = Peminjaman::findOrFail($request->peminjaman_id);
+        if ($peminjaman->status !== 'diterima') {
+            return response()->json(['message' => 'Pengembalian hanya untuk peminjaman yang diterima.'], 422);
+        }
+
+        $path = $request->file('kondisi')->store('kondisi', 'public');
 
         $pengembalian = Pengembalian::create([
             'peminjaman_id' => $request->peminjaman_id,
             'tanggal_kembali' => now(),
-            'jumlah' => $request->jumlah, // ← tambahkan ini
-            'kondisi' => $request->kondisi,
-            'status' => 'pending' // jika kamu pakai approval admin
+            'jumlah' => $request->jumlah,
+            'kondisi' => $path,
+            'status' => 'pending',
         ]);
-
 
         return response()->json([
             'message' => 'Pengembalian berhasil diajukan.',
             'data' => $pengembalian,
         ]);
     }
+
+
 
     //web
 
@@ -85,12 +101,17 @@ class PengembalianController extends Controller
     }
 
 
-    public function tolak($id)
+    public function tolak(Request $request, $id)
     {
+        $request->validate([
+            'alasan_ditolak' => 'required|string|max:255',
+        ]);
+
         $kembali = Pengembalian::findOrFail($id);
         $kembali->status = 'ditolak';
+        $kembali->alasan_ditolak = $request->alasan_ditolak;
         $kembali->save();
 
-        return redirect()->back()->with('success', 'Pengembalian ditolak.');
+        return redirect()->route('pengembalian.index')->with('success', 'Pengembalian ditolak.');
     }
 }

@@ -210,7 +210,7 @@
         </div>
         <div class="content">
             <h2>Data Pengguna</h2>
-                <a href="{{ route('pengguna.create') }}" class="btn">+ Tambah Pengguna</a>
+                <button class="btn" onclick="openTambahModal()">+ Tambah Pengguna</button>
 
                 <form method="GET" action="{{ route('pengguna.index') }}" style="margin-bottom: 20px;">
                     <input type="text" name="search" placeholder="Cari nama pengguna ..."
@@ -243,7 +243,7 @@
                         <td>{{ $p->email }}</td>
                         <td>{{ $p->password }}</td>
                         <td>
-                            <a href="{{ route('pengguna.edit', $p) }}" class="text-blue">Edit</a>
+                            <button type="button" class="text-blue" onclick="openEditModal({{ $p->id }})">Edit</button>
                             <form action="{{ route('pengguna.destroy', $p) }}" method="POST" class="form-inline">
                                 @csrf
                                 @method('DELETE')
@@ -295,6 +295,100 @@
         </div>
     </div>
 </div>
+
+<div id="modalTambah" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+    <div style="background: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 500px; border-radius: 8px; position: relative;">
+        <h2 style="margin-bottom: 16px;">Tambah Kategori</h2>
+        <form action="{{ route('pengguna.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <label>Nama</label>
+            <input type="text" id="name" name="name" value="{{ old('name') }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <label for="email">Email Pengguna</label>
+            <input type="email" id="email" name="email" value="{{ old('email') }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <label for="password">Kata Sandi</label>
+            <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <div style="text-align: right;">
+                <button type="submit" style="background: #2563eb; color: white; padding: 10px 16px; border: none; border-radius: 6px;">Simpan</button>
+                <button type="button" onclick="closeTambahModal()" style="margin-left: 8px; background: #aaa; color: white; padding: 10px 16px; border: none; border-radius: 6px;">Tutup</button>
+            
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal Edit -->
+@foreach($pengguna as $p)
+<div id="editModal-{{ $p->id }}" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+    <div style="background:white; padding:24px; border-radius:12px; max-width:400px; width:90%;">
+        <h3>Edit pengguna</h3>
+        <form action="{{ route('pengguna.update', $p) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <label>Nama</label>
+            <input type="text" id="name" name="name" value="{{ old('name', $p->name) }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <label for="email">Email Pengguna</label>
+            <input type="email" id="email" name="email" value="{{ old('email', $p->email) }}" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <label for="password">Kata Sandi</label>
+            <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <div style="text-align: right;">
+                <button type="submit" style="
+                    padding: 10px 20px;
+                    background-color: #2563eb;
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    margin-right: 10px;
+                    cursor: pointer;
+                ">Simpan</button>
+
+                <button type="button" onclick="closeEditModal({{ $p->id }})" style="
+                    padding: 10px 20px;
+                    background-color: #9ca3af;
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Tutup</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endforeach
+
+<script>
+    function openTambahModal() {
+        document.getElementById('modalTambah').style.display = 'flex';
+    }
+
+    function closeTambahModal() {
+        document.getElementById('modalTambah').style.display = 'none';
+    }
+
+
+    function openEditModal(id) {
+        document.getElementById('editModal-' + id).style.display = 'flex';
+    }
+
+    function closeEditModal(id) {
+        document.getElementById('editModal-' + id).style.display = 'none';
+    }
+
+    // Tutup modal jika klik di luar kontennya
+    window.onclick = function(e) {
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+</script>
 
 </body>
 </html>

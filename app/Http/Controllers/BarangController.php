@@ -11,7 +11,8 @@ class BarangController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Barang::with('kategori'); // langsung with relasi
+        $query = Barang::with('kategori'); 
+        $kategori = KategoriBarang::all();
 
         if ($request->filled('search')) {
             $query->where('nama', 'like', '%' . $request->search . '%');
@@ -23,7 +24,7 @@ class BarangController extends Controller
 
         $barang = $query->paginate(5)->appends($request->query());
 
-        return view('barang.barang', compact('barang'));
+        return view('barang.barang', compact('barang','kategori'));
     }
 
 
